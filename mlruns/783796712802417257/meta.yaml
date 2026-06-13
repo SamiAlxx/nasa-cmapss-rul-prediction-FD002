@@ -1,0 +1,8 @@
+artifact_location: file:C:/Users/smhou/OneDrive/Documents/Master/fh-swf/Projects/NASA
+  C-MAPSS-1 Turbofan Engine Degradation/mlruns/783796712802417257
+creation_time: 1781368303230
+experiment_id: '783796712802417257'
+last_update_time: 1781368303230
+lifecycle_stage: active
+name: cmapss_deep
+workspace: default

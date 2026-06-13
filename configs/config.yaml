@@ -1,0 +1,40 @@
+data:
+  data_dir: ./CMAPSSData
+  sequence_length: 30
+  rul_cap: 125
+  window: 30
+  drop_sensors:
+    - s1
+    - s5
+    - s6
+    - s10
+    - s16
+    - s18
+    - s19
+
+xgboost:
+  n_estimators: 200
+  max_depth: 6
+  learning_rate: 0.05
+  random_state: 42
+
+lstm:
+  hidden_size: 64
+  num_layers: 2
+  dropout: 0.2
+  epochs: 50
+  batch_size: 64
+  learning_rate: 0.001
+
+cnn:
+  num_filters: 64
+  kernel_size: 3
+  dropout: 0.2
+  epochs: 100
+  batch_size: 64
+  learning_rate: 0.001
+
+mlflow:
+  tracking_uri: ./mlruns
+  experiment_baseline: cmapss_baseline
+  experiment_deep: cmapss_deep

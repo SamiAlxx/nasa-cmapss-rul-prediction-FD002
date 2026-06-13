@@ -1,0 +1,29 @@
+import matplotlib.pyplot as plt
+from xgboost import XGBRegressor
+import numpy as np
+from src.data_loader import load_data
+from src.features import build_features
+
+train, test, rul = load_data('./CMAPSSData')
+train = build_features(train, is_train=True)
+
+drop_cols = ['engine_id', 'cycle', 'op_1', 'op_2', 'op_3', 'RUL']
+feature_cols = [c for c in train.columns if c not in drop_cols]
+
+X_train = train[feature_cols]
+y_train = train['RUL']
+
+model = XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.05, random_state=42)
+model.fit(X_train, y_train)
+
+importance = model.feature_importances_
+indices = np.argsort(importance)[-20:]  # top 20
+
+plt.figure(figsize=(10, 8))
+plt.barh(range(20), importance[indices])
+plt.yticks(range(20), [feature_cols[i] for i in indices])
+plt.xlabel('Feature Importance')
+plt.title('XGBoost - Top 20 Feature Importances')
+plt.tight_layout()
+plt.savefig('plots/feature_importance.png', dpi=150)
+plt.show()

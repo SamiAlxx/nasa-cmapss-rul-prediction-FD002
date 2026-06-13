@@ -1,0 +1,15 @@
+artifact_uri: file:C:/Users/smhou/OneDrive/Documents/Master/fh-swf/Projects/NASA C-MAPSS-1
+  Turbofan Engine Degradation/mlruns/783796712802417257/e674decb276e40df938f4b3020d23c30/artifacts
+end_time: 1781368419853
+entry_point_name: ''
+experiment_id: '783796712802417257'
+lifecycle_stage: active
+run_id: e674decb276e40df938f4b3020d23c30
+run_name: lstm_50epochs
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1781368388359
+status: 3
+tags: []
+user_id: smhou
