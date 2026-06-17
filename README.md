@@ -6,6 +6,9 @@ A predictive maintenance project predicting Remaining Useful Life (RUL) of turbo
 
 ## Dataset
 
+### Download the dataset
+Download the CMAPSS dataset from the [NASA Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/) and place the FD001 files in a `CMAPSSData/` folder in the project root.
+
 NASA C-MAPSS (Commercial Modular Aero-Propulsion System Simulation) FD001 subset:
 - 100 training engines run to failure
 - 100 test engines cut off at an unknown point before failure
