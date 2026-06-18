@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import yaml
+from sklearn.cluster import KMeans
 
 with open('./configs/config.yaml', 'r') as f:
     cfg = yaml.safe_load(f)
@@ -41,8 +42,23 @@ def build_features(df: pd.DataFrame, is_train: bool = True) -> pd.DataFrame:
     df = add_rolling_features(df)
     return df
 
-def normalize_features(train_df, test_df, feature_cols):
-    scaler = MinMaxScaler()
-    train_df[feature_cols] = scaler.fit_transform(train_df[feature_cols])
-    test_df[feature_cols]  = scaler.transform(test_df[feature_cols])
-    return train_df, test_df, scaler
+
+def assign_conditions(df, n_clusters=6, kmeans=None):
+    op_cols = ['op_1' , 'op_2' , 'op_3']
+    if kmeans in None:
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        df['condition'] = kmeans.fit_predict(df[op_cols])
+    else:
+        df['condition'] = kmeans.predict(df[op_cols])
+    return df, kmeans 
+
+def normalize_by_condition(train_df, test_df, feature_cols):
+    scalers = {}
+    for c in sorted(train_df['condition'].unique()):
+        scaler = MinMaxScaler()
+        train_mask = train_df['condition'] == c
+        test_mask  = test_df['condition'] == c
+        train_df.loc[train_mask, feature_cols] = scaler.fit_transform(train_df.loc[train_mask, feature_cols])
+        test_df.loc[test_mask, feature_cols]   = scaler.transform(test_df.loc[test_mask, feature_cols])
+        scalers[c] = scaler
+    return train_df, test_df, scalers
