@@ -45,7 +45,7 @@ def build_features(df: pd.DataFrame, is_train: bool = True) -> pd.DataFrame:
 
 def assign_conditions(df, n_clusters=6, kmeans=None):
     op_cols = ['op_1' , 'op_2' , 'op_3']
-    if kmeans in None:
+    if kmeans is None:
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
         df['condition'] = kmeans.fit_predict(df[op_cols])
     else:
@@ -54,6 +54,8 @@ def assign_conditions(df, n_clusters=6, kmeans=None):
 
 def normalize_by_condition(train_df, test_df, feature_cols):
     scalers = {}
+    train_df[feature_cols] = train_df[feature_cols].astype(float)
+    test_df[feature_cols]  = test_df[feature_cols].astype(float)
     for c in sorted(train_df['condition'].unique()):
         scaler = MinMaxScaler()
         train_mask = train_df['condition'] == c
