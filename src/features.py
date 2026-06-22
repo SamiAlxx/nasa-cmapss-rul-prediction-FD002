@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import yaml
 from sklearn.cluster import KMeans
+import numpy as np
 
 with open('./configs/config.yaml', 'r') as f:
     cfg = yaml.safe_load(f)
@@ -9,6 +10,13 @@ with open('./configs/config.yaml', 'r') as f:
 DROP_SENSORS = cfg['data']['drop_sensors']
 RUL_CAP      = cfg['data']['rul_cap']
 WINDOW       = cfg['data']['window']
+
+def train_val_split(df: pd.DataFrame, val_frac: float = 0.2, random_state: int = 42):
+    engine_ids = df['engine_id'].unique()
+    rng        = np.random.default_rng(random_state)
+    val_ids    = rng.choice(engine_ids, size=int(len(engine_ids) * val_frac), replace=False)
+    val_mask   = df['engine_id'].isin(val_ids)
+    return df[~val_mask].reset_index(drop=True), df[val_mask].reset_index(drop=True)
 
 def add_rul_target(df: pd.DataFrame) -> pd.DataFrame:
     max_cycles = df.groupby('engine_id')['cycle'].max().reset_index()
@@ -52,15 +60,18 @@ def assign_conditions(df, n_clusters=6, kmeans=None):
         df['condition'] = kmeans.predict(df[op_cols])
     return df, kmeans 
 
-def normalize_by_condition(train_df, test_df, feature_cols):
+def normalize_by_condition(train_df, val_df, test_df, feature_cols):
     scalers = {}
     train_df[feature_cols] = train_df[feature_cols].astype(float)
+    val_df[feature_cols]   = val_df[feature_cols].astype(float)
     test_df[feature_cols]  = test_df[feature_cols].astype(float)
     for c in sorted(train_df['condition'].unique()):
-        scaler = MinMaxScaler()
+        scaler     = MinMaxScaler()
         train_mask = train_df['condition'] == c
+        val_mask   = val_df['condition'] == c
         test_mask  = test_df['condition'] == c
         train_df.loc[train_mask, feature_cols] = scaler.fit_transform(train_df.loc[train_mask, feature_cols])
+        val_df.loc[val_mask, feature_cols]     = scaler.transform(val_df.loc[val_mask, feature_cols])
         test_df.loc[test_mask, feature_cols]   = scaler.transform(test_df.loc[test_mask, feature_cols])
         scalers[c] = scaler
-    return train_df, test_df, scalers
+    return train_df, val_df, test_df, scalers

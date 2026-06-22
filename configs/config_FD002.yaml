@@ -8,7 +8,6 @@ data:
   drop_sensors:
     - s1
     - s5
-    - s6
     - s10
     - s16
     - s18
@@ -24,17 +23,19 @@ lstm:
   hidden_size: 64
   num_layers: 2
   dropout: 0.2
-  epochs: 100
+  epochs: 200
   batch_size: 64
   learning_rate: 0.001
+  patience: 30
 
 cnn:
   num_filters: 64
   kernel_size: 3
   dropout: 0.2
-  epochs: 150
+  epochs: 200
   batch_size: 64
   learning_rate: 0.001
+  patience: 30
 
 mlflow:
   tracking_uri: ./mlruns
