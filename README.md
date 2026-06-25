@@ -36,21 +36,21 @@ RUL targets are capped at 125 cycles, following the same piecewise linear conven
 
 ### Pipeline
 
-1. **Load data** — raw sensor readings with operational settings
-2. **Drop flat sensors** — s1, s5, s10, s16, s18, s19 dropped (near-zero variance across all conditions). s6 retained — see EDA notebook.
-3. **Engineer RUL target** — cycles-to-failure, capped at 125
-4. **Rolling features** — 30-cycle rolling mean and std added per sensor (28 additional features per engine)
-5. **Train/val split** — 80% of engines for training, 20% held out by engine ID
-6. **Assign operating conditions** — k-means clustering (k=6) on op_1/op_2/op_3 fitted on train only, applied to val and test
-7. **Condition-wise normalization** — separate MinMaxScaler per condition, fitted on train only, applied to val and test
+1. **Load data:** raw sensor readings with operational settings
+2. **Drop flat sensors:** s1, s5, s10, s16, s18, s19 dropped (near-zero variance across all conditions). s6 retained — see EDA notebook.
+3. **Engineer RUL target:** cycles-to-failure, capped at 125
+4. **Rolling features:** 30-cycle rolling mean and std added per sensor (28 additional features per engine)
+5. **Train/val split:** 80% of engines for training, 20% held out by engine ID
+6. **Assign operating conditions:** k-means clustering (k=6) on op_1/op_2/op_3 fitted on train only, applied to val and test
+7. **Condition-wise normalization:** separate MinMaxScaler per condition, fitted on train only, applied to val and test
 
 ### Models
 
-**XGBoost** trains on the last observed cycle per test engine (tabular, no sequences). Uses all 42 features (14 sensors + 28 rolling features).
+**XGBoost:** trains on the last observed cycle per test engine (tabular, no sequences). Uses all 42 features (14 sensors + 28 rolling features).
 
-**LSTM** — 2 layers, hidden size 64, dropout 0.2, sequence length 30, batch size 64, lr 0.001. Early stopping with patience 30.
+**LSTM:** 2 layers, hidden size 64, dropout 0.2, sequence length 30, batch size 64, lr 0.001. Early stopping with patience 30.
 
-**1D CNN** — 64 filters, kernel size 3, dropout 0.2, sequence length 30, batch size 64, lr 0.001. Early stopping with patience 30.
+**1D CNN:** 64 filters, kernel size 3, dropout 0.2, sequence length 30, batch size 64, lr 0.001. Early stopping with patience 30.
 
 All runs use `random_seed=0` for reproducibility.
 
@@ -78,9 +78,9 @@ FD002 results are significantly worse than FD001 across all models (FD001 best: 
 
 **s6 is condition-dependent.** It appeared useless in FD001 (flat signal, dropped) but shows consistent RUL correlation in FD002 once you look within each condition separately. This illustrates a broader point: sensor usefulness can only be assessed after accounting for operating regime.
 
-**LSTM outperforms CNN on FD002.** The reversed ranking compared to FD001 likely reflects the longer-range temporal dependencies in multi-condition data — the LSTM's gating mechanism handles the condition-switching patterns better than the CNN's local convolutions.
+**LSTM outperforms CNN on FD002.** The reversed ranking compared to FD001 likely reflects the longer-range temporal dependencies in multi-condition data, the LSTM's gating mechanism handles the condition-switching patterns better than the CNN's local convolutions.
 
-**Validation set noise limits tuning.** With only ~52 val engines split across 6 conditions (~8-9 per condition), the validation loss is noisy. Optuna could not find a reliably better configuration than the baseline — the best trial by val loss gave RMSE 32, while the best by test RMSE was 24.7 but not reproducible. A larger val set or k-fold cross-validation would be needed for reliable hyperparameter optimization.
+**Validation set noise limits tuning.** With only ~52 val engines split across 6 conditions (~8-9 per condition), the validation loss is noisy. Optuna could not find a reliably better configuration than the baseline, the best trial by val loss gave RMSE 32, while the best by test RMSE was 24.7 but not reproducible. A larger val set or k-fold cross-validation would be needed for reliable hyperparameter optimization.
 
 ---
 
