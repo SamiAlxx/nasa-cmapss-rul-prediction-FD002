@@ -61,7 +61,7 @@ All runs use `random_seed=0` for reproducibility.
 | Model | RMSE | NASA Score |
 |-------|------|------------|
 | XGBoost | 29.69 | 12,322 |
-| 1D CNN | 30.02 | — |
+| 1D CNN | 30.02 | 11510.40 |
 | **LSTM** | **26.00** | **~7,300** |
 
 Lower is better for both metrics. LSTM is the best performer on FD002, unlike FD001 where CNN won.
