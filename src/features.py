@@ -4,7 +4,7 @@ import yaml
 from sklearn.cluster import KMeans
 import numpy as np
 
-with open('./configs/config.yaml', 'r') as f:
+with open('./configs/config_FD002.yaml', 'r') as f:
     cfg = yaml.safe_load(f)
 
 DROP_SENSORS = cfg['data']['drop_sensors']
