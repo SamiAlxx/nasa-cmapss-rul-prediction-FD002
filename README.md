@@ -1,12 +1,12 @@
 # Turbofan Engine RUL Prediction — NASA C-MAPSS FD002
 
-Extension of the FD001 RUL prediction project to the FD002 subset, which introduces 6 distinct operating conditions. This required a fundamentally different preprocessing pipeline compared to FD001.
+Extension of the FD001 RUL prediction project to the FD002 subset, which introduces 6 distinct operating conditions. This required a different preprocessing pipeline compared to FD001.
 
 ---
 
 ## What Changed from FD001
 
-FD001 has a single operating condition — every engine runs under the same settings, so a single global MinMaxScaler normalizes all sensor readings consistently.
+FD001 has a single operating condition, meaning every engine runs under the same settings, so a single global MinMaxScaler normalizes all sensor readings consistently.
 
 FD002 has 6 operating conditions. Engines shift between discrete operating regimes (different throttle, altitude, and Mach settings) throughout their lifecycle. Applying a global scaler mixes readings from different conditions together, making it impossible for the model to distinguish healthy from degraded behavior. A reading of s2=550 means something very different in condition 0 vs condition 3.
 
@@ -26,7 +26,7 @@ NASA C-MAPSS FD002 subset:
 - 260 training engines run to failure
 - 259 test engines cut off at an unknown point before failure
 - 26 columns per row: engine ID, cycle, 3 operational settings, 21 sensor readings
-- **6 operating conditions**, single fault mode
+- 6 operating conditions, single fault mode
 
 RUL targets are capped at 125 cycles, following the same piecewise linear convention as FD001.
 
@@ -61,8 +61,8 @@ All runs use `random_seed=0` for reproducibility.
 | Model | RMSE | NASA Score |
 |-------|------|------------|
 | XGBoost | 29.69 | 12,322 |
-| 1D CNN | 30.02 | 11510.40 |
-| **LSTM** | **26.00** | **~7,300** |
+| 1D CNN | 30.02 | 12,492.02 |
+| **LSTM** | **26.00** | **7,020.64** |
 
 Lower is better for both metrics. LSTM is the best performer on FD002, unlike FD001 where CNN won.
 
@@ -106,5 +106,4 @@ Then open http://127.0.0.1:5000 to view all experiments.
 ## Limitations
 
 - Small validation set (52 engines) makes early stopping and hyperparameter tuning noisy
-- No cross-validation — results are on a single train/test split
 - FD003 and FD004 not yet evaluated
